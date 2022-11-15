@@ -1,5 +1,6 @@
-import { getCarTailLightTexture, getCarHeadlightTexture, getCarSideTexture, getCarFrontTexture } from "./textures"
-import { Wheel } from "./wheel";
+import { getCarTailLightTexture, getCarHeadlightTexture, getCarSideTexture, getCarFrontTexture } from "./textures.js"
+import { vehicleColors } from "../index.js";
+import { Wheel } from "./wheel.js";
 
 
 export function PickupTruck() {

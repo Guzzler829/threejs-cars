@@ -7,13 +7,13 @@ https://github.com/Mugen87/three-jsm
 */
 
 
-//import * as THREE from "../node_modules/three/build/three.module";
+import * as THREE from "../node_modules/three/build/three.module.js";
 
 //import { OrbitControls } from "../node_modules/three/examples/jsm/controls/OrbitControls.js";
 
-import { Car } from "./models/car"
-import { BigTruck } from "./models/bigtruck"
-import { PickupTruck } from "./models/pickup"
+import { Car } from "./models/car.js"
+import { BigTruck } from "./models/bigtruck.js"
+import { PickupTruck } from "./models/pickup.js"
 
 
 
@@ -87,9 +87,9 @@ scene.add(ambientLight)
 
 //Car!!11!!1
 
-const vehicleColors = [0xa82bf0, 0xf03030, 0xf0b630, 0x50f030, 0x3053f0, 0x626d73];
+export const vehicleColors = [0xa82bf0, 0xf03030, 0xf0b630, 0x50f030, 0x3053f0, 0x626d73];
 
-let carColor = pickRandom(vehicleColors);
+//let carColor = pickRandom(vehicleColors);
 
 // Pick a random value from an array
 function pickRandom(array) {

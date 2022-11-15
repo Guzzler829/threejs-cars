@@ -1,5 +1,6 @@
-import { getCarTailLightTexture, getCarHeadlightTexture, getCarSideTexture, getCarFrontTexture, getBigTruckTailLightTexture } from "./textures"
-import { Wheel } from "./wheel";
+import { getCarTailLightTexture, getCarHeadlightTexture, getCarSideTexture, getCarFrontTexture, getBigTruckTailLightTexture } from "./textures.js"
+import { vehicleColors } from "../index.js";
+import { Wheel } from "./wheel.js";
 
 export function BigTruck() {
     const car = new THREE.Group();
@@ -45,8 +46,8 @@ export function BigTruck() {
     new THREE.MeshLambertMaterial({ map: carBackTexture }),
     new THREE.MeshLambertMaterial({ map: carLeftSideTexture }),
     new THREE.MeshLambertMaterial({ map: carRightSideTexture }),
-    new THREE.MeshLambertMaterial({ color: carColor }), // top
-    new THREE.MeshLambertMaterial({ color: carColor }) // bottom
+    new THREE.MeshLambertMaterial({ color: color }), // top
+    new THREE.MeshLambertMaterial({ color: color }) // bottom
     ]);
     cabin.position.x = 18;
     cabin.position.z = 25.5;
