@@ -1,6 +1,6 @@
 export function Wheel() {
     const wheel = new THREE.Mesh(
-        new THREE.BoxGeometry(12, 6, 12),
+        new THREE.CylinderGeometry(6, 6, 6, 20),
         new THREE.MeshLambertMaterial({ color: 0x333333 })
     );
     wheel.castShadow = false;

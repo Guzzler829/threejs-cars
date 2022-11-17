@@ -14,6 +14,7 @@ import * as THREE from "../node_modules/three/build/three.module.js";
 import { Car } from "./models/car.js"
 import { BigTruck } from "./models/bigtruck.js"
 import { PickupTruck } from "./models/pickup.js"
+import { Plane } from "./models/plane.js"
 
 
 
@@ -96,7 +97,7 @@ function pickRandom(array) {
     return array[Math.floor(Math.random() * array.length)];
 }
 
-const vehicles = [Car(), PickupTruck(), BigTruck()];
+const vehicles = [Car(), PickupTruck(), BigTruck(), Plane()];
 for(let i in vehicles) {
     vehicles[i].rotation.x = - Math.PI / 2 + 0.12;
     vehicles[i].rotation.z = - Math.PI / 4;
