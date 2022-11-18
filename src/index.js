@@ -39,14 +39,54 @@ camera.position.z = 500;
 
 */
 
+class ThirdPersonCamera {
+    constructor(params) {
+    this._params = params;
+    this._camera = params.camera;
+
+    this._currentPosition = new THREE.Vector3();
+    this._currentLookat = new THREE.Vector3();
+    }
+
+    _CalculateIdealOffset() {
+    const idealOffset = new THREE.Vector3(-15, 20, -30);
+    idealOffset.applyQuaternion(this._params.target.Rotation);
+    idealOffset.add(this._params.target.Position);
+    return idealOffset;
+    }
+
+    _CalculateIdealLookat() {
+    const idealLookat = new THREE.Vector3(0, 10, 50);
+    idealLookat.applyQuaternion(this._params.target.Rotation);
+    idealLookat.add(this._params.target.Position);
+    return idealLookat;
+    }
+
+    Update(timeElapsed) {
+    const idealOffset = this._CalculateIdealOffset();
+    const idealLookat = this._CalculateIdealLookat();
+
+    // const t = 0.05;
+    // const t = 4.0 * timeElapsed;
+    const t = 1.0 - Math.pow(0.001, timeElapsed);
+
+    this._currentPosition.lerp(idealOffset, t);
+    this._currentLookat.lerp(idealLookat, t);
+
+    this._camera.position.copy(this._currentPosition);
+    this._camera.lookAt(this._currentLookat);
+    }
+}
+
+
 const camera = new THREE.PerspectiveCamera(
     70, 
     window.innerWidth / window.innerHeight, 
-    50, 
-    1000
+    55, 
+    1500
 );
 
-camera.position.set( 0, 90, 350 );
+camera.position.set( 0, 80, 200 );
 
 const renderer = new THREE.WebGLRenderer({antialias: true});
 
@@ -87,6 +127,7 @@ const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(10000, 10000, 2),
     new THREE.MeshStandardMaterial({ color: 0x211e2b })
 );
+ground.receiveShadow = true;
 ground.rotation.x = -Math.PI / 2;
 scene.add(ground);
 
@@ -139,7 +180,8 @@ var coronaSafetyDistance = 0.3;
 var goalDistance = coronaSafetyDistance;
 var velocity = 0.0;
 var speed = 0.0;
-
+//var tip = 0;
+var trafficCones = [];
 
 
 
@@ -158,7 +200,7 @@ function pickRandom(array) {
     return array[Math.floor(Math.random() * array.length)];
 }
 
-const playerTruck = BigTruck();
+const playerTruck = Car();
 playerTruck.rotation.x = - Math.PI / 2;
 
 let goal = new THREE.Object3D;
@@ -193,6 +235,7 @@ for ( var x = 0; x < 10; x ++ ) {
     }
 }
 
+addTrafficCones(2500);
 
 /*
 const vehicles = [Car(), PickupTruck(), BigTruck(), Plane()];
@@ -219,7 +262,7 @@ function render() {
 function updatePlayerVehicle(mesh) {
     speed = 0.0;
     const friction = 0.95;
-    const acceleration = 0.28;
+    const acceleration = 0.265;
 
     if ( keys.w )
     speed = acceleration;
@@ -230,11 +273,15 @@ function updatePlayerVehicle(mesh) {
     velocity *= friction;
     mesh.translateX( velocity );
 
-    if ( keys.a )
-    mesh.rotateZ(velocity / 200);
-    else if ( keys.d )
-    mesh.rotateZ(-velocity / 200);
-        
+    if ( keys.a ){
+        mesh.rotateZ(velocity / 200);
+        // tip -= 0.1;
+    } else if ( keys.d ) {
+        mesh.rotateZ(-velocity / 200);
+        // tip += 0.1;
+    }
+    // tip *= 0.5;
+    // mesh.rotation.y = tip;
     
     
     a.lerp(mesh.position, 0.4);
@@ -270,6 +317,18 @@ function updatePlayerVehicle(mesh) {
     goal.position.lerp(temp, 2);
     
     camera.lookAt( mesh.position );
+}
+
+function addTrafficCones(number) {
+    for(let i = 0; i < number; i++) {
+        let cone = new THREE.Mesh(
+            new THREE.ConeGeometry(5, 10, 16),
+            new THREE.MeshLambertMaterial({color: 0xff8c00})
+        )
+        cone.position.set(Math.random() * 10000, 10, Math.random() * 10000);
+        scene.add(cone);
+        trafficCones.push(cone);
+    }
 }
 
 //resize the canvas with the window
