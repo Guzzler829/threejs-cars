@@ -40,13 +40,13 @@ camera.position.z = 500;
 */
 
 const camera = new THREE.PerspectiveCamera(
-    45, 
+    70, 
     window.innerWidth / window.innerHeight, 
-    0.1, 
+    50, 
     1000
 );
 
-camera.position.z = 350
+camera.position.set( 0, 90, 350 );
 
 const renderer = new THREE.WebGLRenderer({antialias: true});
 
@@ -83,8 +83,69 @@ scene.add(dirLight2);
 const ambientLight = new THREE.AmbientLight( 0x606060 ); // soft white light
 scene.add(ambientLight)
 
+const ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(10000, 10000, 2),
+    new THREE.MeshStandardMaterial({ color: 0x211e2b })
+);
+ground.rotation.x = -Math.PI / 2;
+scene.add(ground);
 
 
+//Key input
+let keys = {
+    a: false,
+    s: false,
+    d: false,
+    w: false
+};
+
+document.body.addEventListener( 'mousemove', function(e) {
+    mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
+    mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
+    
+});
+
+document.body.addEventListener( 'keydown', function(e) {
+    
+    var key = e.code.replace('Key', '').toLowerCase();
+    if ( keys[ key ] !== undefined )
+    keys[ key ] = true;
+    
+});
+document.body.addEventListener( 'keyup', function(e) {
+    
+    var key = e.code.replace('Key', '').toLowerCase();
+    if ( keys[ key ] !== undefined )
+    keys[ key ] = false;
+    
+});
+
+var time = 0;
+var newPosition = new THREE.Vector3();
+var matrix = new THREE.Matrix4();
+
+var stop = 1;
+
+var DEGTORAD = 0.01745327;
+var temp = new THREE.Vector3;
+var dir = new THREE.Vector3;
+var eye = new THREE.Vector3;
+var a = new THREE.Vector3;
+var b = new THREE.Vector3;
+var raycaster = new THREE.Raycaster;
+var mouse = new THREE.Vector2;
+var environment = [];
+var coronaSafetyDistance = 0.3;
+var goalDistance = coronaSafetyDistance;
+var velocity = 0.0;
+var speed = 0.0;
+
+
+
+
+//grid!!!
+var gridHelper = new THREE.GridHelper( 1000, 50 );
+scene.add( gridHelper );
 
 //Car!!11!!1
 
@@ -97,6 +158,43 @@ function pickRandom(array) {
     return array[Math.floor(Math.random() * array.length)];
 }
 
+const playerTruck = BigTruck();
+playerTruck.rotation.x = - Math.PI / 2;
+
+let goal = new THREE.Object3D;
+let follow = new THREE.Object3D;
+goal.add( camera );
+follow.position.z = -coronaSafetyDistance;
+playerTruck.add( follow );
+
+scene.add(playerTruck);
+
+const buildingColors = [0x858585, 0x4a567d, 0x7d564a, 0x4f7a48];
+
+var rand = Math.random;
+
+for ( var x = 0; x < 10; x ++ ) {
+    for ( var y = 0; y < 10; y ++ ) {
+        
+        let buildingHeight = 120 - rand() * 60;
+        let building = new THREE.Mesh(
+            new THREE.BoxGeometry(40, buildingHeight, 40),
+            new THREE.MeshLambertMaterial({ color: pickRandom(buildingColors) })
+        );
+    
+        building.position.set(  (( x - 5 ) / 10) * 3000 + 100, buildingHeight, (( y - 5 ) / 10) * 3000 + 100);
+        building.scale.set( 1 + rand() * 2, 2, 1 + rand() * 2 );
+        building.castShadow = true;
+        building.receiveShadow = true;
+        scene.add( building );
+        
+        environment.push( building );
+        
+    }
+}
+
+
+/*
 const vehicles = [Car(), PickupTruck(), BigTruck(), Plane()];
 for(let i in vehicles) {
     vehicles[i].rotation.x = - Math.PI / 2 + 0.12;
@@ -106,15 +204,72 @@ for(let i in vehicles) {
 
     scene.add( vehicles[i] );
 }
-
-
+*/
 
 render();
 function render() {
     renderer.render(scene, camera);
     requestAnimationFrame(render);
 
+    updatePlayerVehicle(playerTruck)
+
     //controls.update();
+}
+
+function updatePlayerVehicle(mesh) {
+    speed = 0.0;
+    const friction = 0.95;
+    const acceleration = 0.28;
+
+    if ( keys.w )
+    speed = acceleration;
+    else if ( keys.s )
+    speed = -acceleration;
+
+    velocity += speed;
+    velocity *= friction;
+    mesh.translateX( velocity );
+
+    if ( keys.a )
+    mesh.rotateZ(velocity / 200);
+    else if ( keys.d )
+    mesh.rotateZ(-velocity / 200);
+        
+    
+    
+    a.lerp(mesh.position, 0.4);
+    b.copy(goal.position);
+    
+    temp.setFromMatrixPosition(camera.matrixWorld);
+    
+    
+    
+    dir.copy( a ).sub( b ).normalize();
+    
+    eye.copy(dir).negate();
+    raycaster.set( a, eye );
+    var intersects = raycaster.intersectObjects( environment );
+
+    var distance = coronaSafetyDistance;
+    
+    if ( intersects && intersects.length ) {
+        var space = intersects[0].distance;
+        var radius = .2;
+        
+        // Pick the shorter distance
+        distance = Math.min( distance, space - radius );
+        
+    }
+    
+    goalDistance += ( distance - goalDistance ) * 0.2;
+    
+    let dis = a.distanceTo( b ) - goalDistance;
+    
+    goal.position.addScaledVector( dir, dis );
+    temp.setFromMatrixPosition(follow.matrixWorld);
+    goal.position.lerp(temp, 2);
+    
+    camera.lookAt( mesh.position );
 }
 
 //resize the canvas with the window
