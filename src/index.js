@@ -200,7 +200,7 @@ function pickRandom(array) {
     return array[Math.floor(Math.random() * array.length)];
 }
 
-const playerTruck = Car();
+let playerTruck = Car();
 playerTruck.rotation.x = - Math.PI / 2;
 
 let goal = new THREE.Object3D;
@@ -210,6 +210,30 @@ follow.position.z = -coronaSafetyDistance;
 playerTruck.add( follow );
 
 scene.add(playerTruck);
+
+
+let buttons = document.getElementsByClassName("vehicle-button");
+buttons[0].addEventListener('click', () => {
+    changeVehicle(Car());
+});  
+buttons[1].addEventListener('click', () => {
+    changeVehicle(PickupTruck());
+});  
+buttons[2].addEventListener('click', () => {
+    changeVehicle(BigTruck());
+});  
+buttons[3].addEventListener('click', () => {
+    changeVehicle(Plane());
+});  
+function changeVehicle(v) {
+    scene.remove(playerTruck);
+    playerTruck = v;
+    playerTruck.rotation.x = - Math.PI / 2;
+    playerTruck.add( follow );
+    scene.add(playerTruck);
+}
+
+
 
 const buildingColors = [0x858585, 0x4a567d, 0x7d564a, 0x4f7a48];
 

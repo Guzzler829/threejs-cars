@@ -5,6 +5,33 @@
 
 body {
     font-family: Arial, Helvetica, sans-serif;
-    background-color: #222;
     color: white;
+}
+
+canvas {
+    position: absolute;
+    z-index: 0;
+}
+
+.vehicle-selector {
+    position: absolute;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(calc(-50% + 50px));
+    z-index: 999;
+}
+
+.vehicle-selector img {
+    object-fit: none;
+    object-position: center;
+    width: 220px;
+    height: 220px;
+    border: 4px solid gray;
+    border-radius: 50%;
+    transform: scale(50%);
+}
+
+.vehicle-selector img:hover {
+    border: 4px solid white;
+    cursor: pointer;
 }

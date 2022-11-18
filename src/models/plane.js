@@ -28,7 +28,7 @@ export function Plane() {
         new THREE.BoxGeometry(12, 45, 5),
         new THREE.MeshLambertMaterial({ color: color })         
     )
-    horizontalStabilizer.position.x = -24;
+    horizontalStabilizer.position.x = -26;
     horizontalStabilizer.castShadow = true;
     horizontalStabilizer.receiveShadow = true;
     plane.add(horizontalStabilizer);
@@ -37,7 +37,7 @@ export function Plane() {
         new THREE.BoxGeometry(10, 5, 26),
         new THREE.MeshLambertMaterial({ color: color })         
     )
-    verticalStabilizer.position.x = -26;
+    verticalStabilizer.position.x = -28;
     verticalStabilizer.position.z = 5.5;
     verticalStabilizer.castShadow = true;
     verticalStabilizer.receiveShadow = true;
